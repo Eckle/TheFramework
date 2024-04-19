@@ -28,7 +28,7 @@ func (res BaseResource) GetResource(params *queries.Params) (*[]map[string]inter
 	}
 
 	for rows.Next() {
-		var resource map[string]interface{}
+		var resource map[string]interface{} = make(map[string]interface{})
 		err = rows.MapScan(resource)
 		if err != nil {
 			return &resourceList, err
