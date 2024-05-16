@@ -6,8 +6,8 @@ import (
 	"strconv"
 
 	"github.com/Eckle/TheFramework/db/queries"
-	"github.com/Eckle/TheFramework/db/resources"
 	"github.com/Eckle/TheFramework/httpcodec"
+	"github.com/Eckle/TheFramework/models"
 )
 
 type Controllers interface {
@@ -21,7 +21,7 @@ type Controllers interface {
 }
 
 type BaseControllers struct {
-	Resource   resources.BaseResource
+	Resource   models.BaseResource
 	Controller string
 	Variable   string
 }

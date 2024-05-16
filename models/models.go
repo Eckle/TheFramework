@@ -1,4 +1,4 @@
-package resources
+package models
 
 import (
 	"github.com/Eckle/TheFramework/db"
