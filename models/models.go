@@ -79,3 +79,9 @@ func (res BaseResource) DeleteResource(id int) error {
 
 	return nil
 }
+
+func New(table string) BaseResource {
+	return BaseResource{
+		Table: table,
+	}
+}
