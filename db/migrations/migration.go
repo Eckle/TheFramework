@@ -1,20 +1,26 @@
 package migrations
 
-import "github.com/Eckle/TheFramework/db"
+import (
+	"github.com/Eckle/TheFramework/db"
+)
 
 /*
 	This package assumes the migrations were all successful.
-	If it wasn't git gud. The skill issues are yours and yours alone.
-	Learn SQL.
+	If a migration failed its a skill issue. Learn SQL.
 */
 
-type Migration struct {
+type Migration interface {
+	Run() error
+	Revert() error
+}
+
+type BaseMigration struct {
 	Name string
 	Up   string
 	Down string
 }
 
-func (migration Migration) Run() error {
+func (migration BaseMigration) Run() error {
 	db := db.Database
 
 	var count int
@@ -35,7 +41,7 @@ func (migration Migration) Run() error {
 	return nil
 }
 
-func (migration Migration) Revert() error {
+func (migration BaseMigration) Revert() error {
 	db := db.Database
 
 	_, err := db.Exec(migration.Down)
