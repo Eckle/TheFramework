@@ -21,9 +21,13 @@ type Controllers interface {
 }
 
 type BaseControllers struct {
-	Resource   models.BaseResource
-	Controller string
-	Variable   string
+	Resource models.BaseResource
+
+	// Used for nested controllers
+	PreviousController          *BaseControllers
+	PreviousControllerIdMapping string // A string containing the name of the field in the current controller's resource that relates it to the previous controller's resource
+
+	Variable string
 }
 
 func (controller BaseControllers) GetAll() http.Handler {
@@ -150,9 +154,9 @@ func (controller BaseControllers) Delete() http.Handler {
 }
 
 func (controller BaseControllers) AddToRouter(router *http.ServeMux) {
-	router.Handle(fmt.Sprintf("GET /%s", controller.Controller), controller.GetAll())
-	router.Handle(fmt.Sprintf("POST /%s", controller.Controller), controller.Post())
-	router.Handle(fmt.Sprintf("GET /%s/{%s}", controller.Controller, controller.Variable), controller.Get())
-	router.Handle(fmt.Sprintf("PATCH /%s/{%s}", controller.Controller, controller.Variable), controller.Patch())
-	router.Handle(fmt.Sprintf("DELETE /%s/{%s}", controller.Controller, controller.Variable), controller.Delete())
+	router.Handle(fmt.Sprintf("GET /%s", controller.Resource.Table), controller.GetAll())
+	router.Handle(fmt.Sprintf("POST /%s", controller.Resource.Table), controller.Post())
+	router.Handle(fmt.Sprintf("GET /%s/{%s}", controller.Resource.Table, controller.Variable), controller.Get())
+	router.Handle(fmt.Sprintf("PATCH /%s/{%s}", controller.Resource.Table, controller.Variable), controller.Patch())
+	router.Handle(fmt.Sprintf("DELETE /%s/{%s}", controller.Resource.Table, controller.Variable), controller.Delete())
 }
