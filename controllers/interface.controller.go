@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/Eckle/TheFramework/db/queries"
 	"github.com/Eckle/TheFramework/httpcodec"
@@ -159,4 +160,13 @@ func (controller BaseControllers) AddToRouter(router *http.ServeMux) {
 	router.Handle(fmt.Sprintf("GET /%s/{%s}", controller.Resource.Table, controller.Variable), controller.Get())
 	router.Handle(fmt.Sprintf("PATCH /%s/{%s}", controller.Resource.Table, controller.Variable), controller.Patch())
 	router.Handle(fmt.Sprintf("DELETE /%s/{%s}", controller.Resource.Table, controller.Variable), controller.Delete())
+}
+
+func New(resource models.BaseResource, previous_controller *BaseControllers, previous_controller_id_mapping string) BaseControllers {
+	return BaseControllers{
+		Resource:                    resource,
+		PreviousController:          previous_controller,
+		PreviousControllerIdMapping: previous_controller_id_mapping,
+		Variable:                    fmt.Sprintf("%sId", strings.TrimSuffix(resource.Table, "s")),
+	}
 }
