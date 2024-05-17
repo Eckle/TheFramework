@@ -11,7 +11,7 @@ import (
 	"github.com/Eckle/TheFramework/models"
 )
 
-type Controllers interface {
+type Controller interface {
 	GetAll() http.Handler
 	Post() http.Handler
 	Get() http.Handler
@@ -21,17 +21,17 @@ type Controllers interface {
 	AddToRouter(router *http.ServeMux)
 }
 
-type BaseControllers struct {
+type BaseController struct {
 	Resource models.BaseResource
 
 	// Used for nested controllers
-	PreviousController          *BaseControllers
+	PreviousController          *BaseController
 	PreviousControllerIdMapping string // A string containing the name of the field in the current controller's resource that relates it to the previous controller's resource
 
 	Variable string
 }
 
-func (controller BaseControllers) GetAll() http.Handler {
+func (controller BaseController) GetAll() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		params, err := queries.ExtractQueryParams(r)
 		if err != nil {
@@ -51,7 +51,7 @@ func (controller BaseControllers) GetAll() http.Handler {
 	})
 }
 
-func (controller BaseControllers) Post() http.Handler {
+func (controller BaseController) Post() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		resource, err := httpcodec.Decode(r)
 		if err != nil {
@@ -71,7 +71,7 @@ func (controller BaseControllers) Post() http.Handler {
 	})
 }
 
-func (controller BaseControllers) Get() http.Handler {
+func (controller BaseController) Get() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		resourceId, err := strconv.Atoi(r.PathValue(controller.Variable))
 		if err != nil {
@@ -100,7 +100,7 @@ func (controller BaseControllers) Get() http.Handler {
 	})
 }
 
-func (controller BaseControllers) Patch() http.Handler {
+func (controller BaseController) Patch() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		resourceId, err := strconv.Atoi(r.PathValue(controller.Variable))
 		if err != nil {
@@ -134,7 +134,7 @@ func (controller BaseControllers) Patch() http.Handler {
 	})
 }
 
-func (controller BaseControllers) Delete() http.Handler {
+func (controller BaseController) Delete() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		resourceId, err := strconv.Atoi(r.PathValue(controller.Variable))
 		if err != nil {
@@ -154,7 +154,7 @@ func (controller BaseControllers) Delete() http.Handler {
 	})
 }
 
-func (controller BaseControllers) AddToRouter(router *http.ServeMux) {
+func (controller BaseController) AddToRouter(router *http.ServeMux) {
 	router.Handle(fmt.Sprintf("GET /%s", controller.Resource.Table), controller.GetAll())
 	router.Handle(fmt.Sprintf("POST /%s", controller.Resource.Table), controller.Post())
 	router.Handle(fmt.Sprintf("GET /%s/{%s}", controller.Resource.Table, controller.Variable), controller.Get())
@@ -162,8 +162,8 @@ func (controller BaseControllers) AddToRouter(router *http.ServeMux) {
 	router.Handle(fmt.Sprintf("DELETE /%s/{%s}", controller.Resource.Table, controller.Variable), controller.Delete())
 }
 
-func New(resource models.BaseResource, previous_controller *BaseControllers, previous_controller_id_mapping string) BaseControllers {
-	return BaseControllers{
+func New(resource models.BaseResource, previous_controller *BaseController, previous_controller_id_mapping string) BaseController {
+	return BaseController{
 		Resource:                    resource,
 		PreviousController:          previous_controller,
 		PreviousControllerIdMapping: previous_controller_id_mapping,
