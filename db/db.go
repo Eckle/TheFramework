@@ -7,7 +7,7 @@ import (
 	_ "github.com/tursodatabase/libsql-client-go/libsql"
 )
 
-var Database *sqlx.DB
+var Database *sqlx.DB = nil
 
 func InitDB() {
 	db, err := sqlx.Open("libsql", os.Getenv("DATABASE_URL"))
