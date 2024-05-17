@@ -59,7 +59,6 @@ func AddMigration(migration Migration) {
 }
 
 func RunMigrations() error {
-
 	migrations_table := `
 		CREATE TABLE IF NOT EXISTS migrations (
 			id INTEGER PRIMARY KEY,
