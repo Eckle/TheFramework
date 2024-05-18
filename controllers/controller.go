@@ -40,6 +40,17 @@ func (controller BaseController) GetAll() http.Handler {
 			return
 		}
 
+		if controller.PreviousController != nil && controller.PreviousControllerIdMapping != "" {
+			previousControllerResourceId, err := strconv.Atoi(r.PathValue(controller.Variable))
+			if err != nil {
+				w.WriteHeader(http.StatusBadRequest)
+				fmt.Fprint(w, err)
+				return
+			}
+
+			queries.AddFilter(params, controller.PreviousControllerIdMapping, previousControllerResourceId)
+		}
+
 		resourceList, err := controller.Resource.GetResource(params)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
@@ -58,6 +69,17 @@ func (controller BaseController) Post() http.Handler {
 			w.WriteHeader(http.StatusBadRequest)
 			fmt.Fprint(w, err)
 			return
+		}
+
+		if controller.PreviousController != nil && controller.PreviousControllerIdMapping != "" {
+			previousControllerResourceId, err := strconv.Atoi(r.PathValue(controller.Variable))
+			if err != nil {
+				w.WriteHeader(http.StatusBadRequest)
+				fmt.Fprint(w, err)
+				return
+			}
+
+			resource[controller.PreviousControllerIdMapping] = previousControllerResourceId
 		}
 
 		err = controller.Resource.CreateResource(&resource)
@@ -85,6 +107,17 @@ func (controller BaseController) Get() http.Handler {
 			w.WriteHeader(http.StatusBadRequest)
 			fmt.Fprint(w, err)
 			return
+		}
+
+		if controller.PreviousController != nil && controller.PreviousControllerIdMapping != "" {
+			previousControllerResourceId, err := strconv.Atoi(r.PathValue(controller.Variable))
+			if err != nil {
+				w.WriteHeader(http.StatusBadRequest)
+				fmt.Fprint(w, err)
+				return
+			}
+
+			queries.AddFilter(params, controller.PreviousControllerIdMapping, previousControllerResourceId)
 		}
 
 		queries.AddFilter(params, "id", resourceId)
@@ -123,6 +156,17 @@ func (controller BaseController) Patch() http.Handler {
 			return
 		}
 
+		if controller.PreviousController != nil && controller.PreviousControllerIdMapping != "" {
+			previousControllerResourceId, err := strconv.Atoi(r.PathValue(controller.Variable))
+			if err != nil {
+				w.WriteHeader(http.StatusBadRequest)
+				fmt.Fprint(w, err)
+				return
+			}
+
+			queries.AddFilter(params, controller.PreviousControllerIdMapping, previousControllerResourceId)
+		}
+
 		err = controller.Resource.UpdateResource(resourceId, params, &resource)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
@@ -143,7 +187,27 @@ func (controller BaseController) Delete() http.Handler {
 			return
 		}
 
-		err = controller.Resource.DeleteResource(resourceId)
+		params, err := queries.ExtractQueryParams(r)
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			fmt.Fprint(w, err)
+			return
+		}
+
+		if controller.PreviousController != nil && controller.PreviousControllerIdMapping != "" {
+			previousControllerResourceId, err := strconv.Atoi(r.PathValue(controller.Variable))
+			if err != nil {
+				w.WriteHeader(http.StatusBadRequest)
+				fmt.Fprint(w, err)
+				return
+			}
+
+			queries.AddFilter(params, controller.PreviousControllerIdMapping, previousControllerResourceId)
+		}
+
+		queries.AddFilter(params, "id", resourceId)
+
+		err = controller.Resource.DeleteResource(resourceId, params)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			fmt.Fprint(w, err)
@@ -155,11 +219,16 @@ func (controller BaseController) Delete() http.Handler {
 }
 
 func (controller BaseController) AddToRouter(router *http.ServeMux) {
-	router.Handle(fmt.Sprintf("GET /%s", controller.Resource.Table), controller.GetAll())
-	router.Handle(fmt.Sprintf("POST /%s", controller.Resource.Table), controller.Post())
-	router.Handle(fmt.Sprintf("GET /%s/{%s}", controller.Resource.Table, controller.Variable), controller.Get())
-	router.Handle(fmt.Sprintf("PATCH /%s/{%s}", controller.Resource.Table, controller.Variable), controller.Patch())
-	router.Handle(fmt.Sprintf("DELETE /%s/{%s}", controller.Resource.Table, controller.Variable), controller.Delete())
+	var root string = ""
+	if controller.PreviousController != nil {
+		root = fmt.Sprintf("/%s/{%s}", controller.PreviousController.Resource.Table, controller.PreviousController.Variable)
+	}
+
+	router.Handle(fmt.Sprintf("GET %s/%s", root, controller.Resource.Table), controller.GetAll())
+	router.Handle(fmt.Sprintf("POST %s/%s", root, controller.Resource.Table), controller.Post())
+	router.Handle(fmt.Sprintf("GET %s/%s/{%s}", root, controller.Resource.Table, controller.Variable), controller.Get())
+	router.Handle(fmt.Sprintf("PATCH %s/%s/{%s}", root, controller.Resource.Table, controller.Variable), controller.Patch())
+	router.Handle(fmt.Sprintf("DELETE %s/%s/{%s}", root, controller.Resource.Table, controller.Variable), controller.Delete())
 }
 
 func New(resource models.BaseResource, previous_controller *BaseController, previous_controller_id_mapping string) BaseController {
