@@ -64,15 +64,15 @@ func (res BaseResource) UpdateResource(id int, params *queries.Params, resource 
 	return nil
 }
 
-func (res BaseResource) DeleteResource(id int) error {
+func (res BaseResource) DeleteResource(id int, params *queries.Params) error {
 	db := db.Database
 
-	query, err := queries.BuildDeleteQuery(res.Table)
+	query, args, err := queries.BuildDeleteQuery(res.Table, params)
 	if err != nil {
 		return err
 	}
 
-	_, err = db.Exec(query, id)
+	_, err = db.Exec(query, args...)
 	if err != nil {
 		return err
 	}

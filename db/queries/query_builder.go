@@ -74,10 +74,15 @@ func BuildUpdateQuery(table string, id int, params *Params, data *map[string]int
 	return db.Database.Rebind(strings.Join(strings.Fields(query), " ")), args, nil
 }
 
-func BuildDeleteQuery(table string) (string, error) {
+func BuildDeleteQuery(table string, params *Params) (string, []interface{}, error) {
 	if isValidName(table) {
-		return fmt.Sprintf(`DELETE FROM %s WHERE id = ?`, table), nil
+		filterString, args, err := filter(params.Filter)
+		if err != nil {
+			return "", nil, err
+		}
+		// query := fmt.Sprintf("SELECT %s FROM %s %s %s LIMIT %d OFFSET %d;", fieldsString, table, filterString, sortString, params.PerPage, params.Page)
+		return fmt.Sprintf(`DELETE FROM %s %s`, table, filterString), args, nil
 	}
 
-	return "", fmt.Errorf("the table name contains invalid characters")
+	return "", nil, fmt.Errorf("the table name contains invalid characters")
 }
