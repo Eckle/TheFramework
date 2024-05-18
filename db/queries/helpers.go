@@ -177,6 +177,6 @@ func AddFilter(params *Params, column string, value interface{}) {
 	if params.Filter == "" {
 		params.Filter = fmt.Sprintf("%s=%v", column, value)
 	} else {
-		params.Filter = fmt.Sprintf(",%s=%v", column, value)
+		params.Filter = fmt.Sprintf("%s,%s=%v", params.Filter, column, value)
 	}
 }
