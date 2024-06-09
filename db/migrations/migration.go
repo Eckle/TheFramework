@@ -63,7 +63,7 @@ func RunMigrations() error {
 		CREATE TABLE IF NOT EXISTS migrations (
 			id INTEGER PRIMARY KEY,
 			name TEXT UNIQUE,
-			installed_on DATETIME DEFAULT CURRENT_TIMESTAMP
+			installed_on TEXT DEFAULT (strftime('%Y-%m-%d %H:%M:%f', 'now'))
 		);
 	`
 
