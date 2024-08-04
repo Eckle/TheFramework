@@ -2,15 +2,13 @@ package middleware
 
 import "net/http"
 
-type Key string
+type Middleware func(http.Handler) http.Handler
 
-type Middleware func(next http.Handler, arguments *map[string]interface{}) http.Handler
-
-func CreateStack(arguments *map[string]interface{}, middlewares ...Middleware) Middleware {
-	return func(next http.Handler, arguments *map[string]interface{}) http.Handler {
-		for i := len(middlewares); i >= 0; i-- {
-			middleware := middlewares[i]
-			next = middleware(next, arguments)
+func CreateStack(xs ...Middleware) Middleware {
+	return func(next http.Handler) http.Handler {
+		for i := len(xs) - 1; i >= 0; i-- {
+			x := xs[i]
+			next = x(next)
 		}
 		return next
 	}
