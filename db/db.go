@@ -3,24 +3,14 @@ package db
 import (
 	"os"
 
-	_ "github.com/go-sql-driver/mysql"
+	_ "github.com/glebarez/go-sqlite"
 	"github.com/jmoiron/sqlx"
-	_ "github.com/lib/pq"
-	_ "github.com/tursodatabase/libsql-client-go/libsql"
 )
 
 var Database *sqlx.DB = nil
 
-type DatabaseDriver string
-
-const (
-	Postgres DatabaseDriver = "postgres"
-	MySQL    DatabaseDriver = "mysql"
-	Turso    DatabaseDriver = "libsql"
-)
-
-func InitDB(driver DatabaseDriver) {
-	db, err := sqlx.Open(string(driver), os.Getenv("DATABASE_URL"))
+func InitDB() {
+	db, err := sqlx.Open("sqlite", os.Getenv("DATABASE_URL"))
 
 	if err != nil {
 		panic(err)
