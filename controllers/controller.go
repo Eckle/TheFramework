@@ -72,7 +72,7 @@ func (controller BaseController) Post() http.Handler {
 		}
 
 		if controller.PreviousController != nil && controller.PreviousControllerIdMapping != "" {
-			previousControllerResourceId, err := strconv.Atoi(r.PathValue(controller.Variable))
+			previousControllerResourceId, err := strconv.Atoi(r.PathValue(controller.PreviousController.Variable))
 			if err != nil {
 				w.WriteHeader(http.StatusBadRequest)
 				fmt.Fprint(w, err)
