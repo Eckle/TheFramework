@@ -1,6 +1,6 @@
 module github.com/Eckle/TheFramework
 
-go 1.22.1
+go 1.22.5
 
 require (
 	github.com/glebarez/go-sqlite v1.22.0
