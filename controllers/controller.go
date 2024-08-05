@@ -231,11 +231,11 @@ func (controller BaseController) AddToRouter(router *http.ServeMux) {
 	router.Handle(fmt.Sprintf("DELETE %s/%s/{%s}", root, controller.Resource.Table, controller.Variable), controller.Delete())
 }
 
-func New(resource models.BaseResource, previous_controller *BaseController, previous_controller_id_mapping string) BaseController {
+func New(model models.BaseResource, previous_controller *BaseController, previous_controller_id_mapping string) BaseController {
 	return BaseController{
-		Resource:                    resource,
+		Resource:                    model,
 		PreviousController:          previous_controller,
 		PreviousControllerIdMapping: previous_controller_id_mapping,
-		Variable:                    fmt.Sprintf("%sId", strings.TrimSuffix(resource.Table, "s")),
+		Variable:                    fmt.Sprintf("%sId", strings.TrimSuffix(model.Table, "s")),
 	}
 }
