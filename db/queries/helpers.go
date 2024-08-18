@@ -47,37 +47,37 @@ func filter(filter string) (string, []interface{}, error) {
 		if strings.Contains(filterList[i], "=") {
 			split := strings.Split(filterList[i], "=")
 
-			field = split[0]
+			field = strings.Trim(split[0], " ")
 			operator = "="
 			value = split[1]
 		} else if strings.Contains(filterList[i], "!=") {
 			split := strings.Split(filterList[i], "!=")
 
-			field = split[0]
+			field = strings.Trim(split[0], " ")
 			operator = "!="
 			value = split[1]
 		} else if strings.Contains(filterList[i], "<") {
 			split := strings.Split(filterList[i], "<")
 
-			field = split[0]
+			field = strings.Trim(split[0], " ")
 			operator = "<"
 			value = split[1]
 		} else if strings.Contains(filterList[i], ">") {
 			split := strings.Split(filterList[i], ">")
 
-			field = split[0]
+			field = strings.Trim(split[0], " ")
 			operator = ">"
 			value = split[1]
 		} else if strings.Contains(filterList[i], "<=") {
 			split := strings.Split(filterList[i], "<=")
 
-			field = split[0]
+			field = strings.Trim(split[0], " ")
 			operator = "<="
 			value = split[1]
 		} else if strings.Contains(filterList[i], ">=") {
 			split := strings.Split(filterList[i], ">=")
 
-			field = split[0]
+			field = strings.Trim(split[0], " ")
 			operator = ">="
 			value = split[1]
 		} else {
@@ -132,9 +132,9 @@ func sort(sort string) (string, error) {
 
 		if firstCharIsAlphaNum {
 			sortConditions = append(sortConditions, field)
-		} else if sortList[i][0] == '+' {
+		} else if strings.Trim(sortList[i], " ")[0] == '+' {
 			sortConditions = append(sortConditions, fmt.Sprintf("%s ASC", field))
-		} else if sortList[i][0] == '-' {
+		} else if strings.Trim(sortList[i], " ")[0] == '-' {
 			sortConditions = append(sortConditions, fmt.Sprintf("%s DESC", field))
 		} else {
 			return "", fmt.Errorf("first character is invalid: %s", field)
