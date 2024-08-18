@@ -28,7 +28,7 @@ func BuildGetQuery(table string, params *Params) (string, []interface{}) {
 	}
 
 	query := fmt.Sprintf("SELECT %s FROM %s %s %s LIMIT %d OFFSET %d;", fieldsString, table, filterString, sortString, params.PerPage, params.Page)
-	return db.Database.Rebind(strings.Join(strings.Fields(query), " ")), args
+	return query, args
 }
 
 func BuildInsertQuery(table string, data *map[string]interface{}) (string, []interface{}, error) {
