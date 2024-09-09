@@ -48,7 +48,7 @@ func Verify(tokenString string, claims *jwt.MapClaims) (*jwt.MapClaims, bool) {
 
 	if claims, ok := token.Claims.(*jwt.MapClaims); ok && token.Valid {
 		return claims, token.Valid
-	} else {
-		return nil, token.Valid
 	}
+	
+	return nil, token.Valid
 }
