@@ -28,6 +28,8 @@ type BaseController struct {
 	PreviousController          *BaseController
 	PreviousControllerIdMapping string // A string containing the name of the field in the current controller's resource that relates it to the previous controller's resource
 
+	Codec httpcodec.HttpCodec
+
 	Variable string
 }
 
@@ -58,13 +60,13 @@ func (controller BaseController) GetAll() http.Handler {
 			return
 		}
 
-		httpcodec.Encode(w, r, resourceList)
+		controller.Codec.Encode(w, r, resourceList)
 	})
 }
 
 func (controller BaseController) Post() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		resource, err := httpcodec.Decode(r)
+		resource, err := controller.Codec.Decode(r)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			fmt.Fprint(w, err)
@@ -89,7 +91,7 @@ func (controller BaseController) Post() http.Handler {
 			return
 		}
 
-		httpcodec.Encode(w, r, resource)
+		controller.Codec.Encode(w, r, resource)
 	})
 }
 
@@ -129,7 +131,7 @@ func (controller BaseController) Get() http.Handler {
 			return
 		}
 
-		httpcodec.Encode(w, r, resourceList)
+		controller.Codec.Encode(w, r, resourceList)
 	})
 }
 
@@ -142,7 +144,7 @@ func (controller BaseController) Patch() http.Handler {
 			return
 		}
 
-		resource, err := httpcodec.Decode(r)
+		resource, err := controller.Codec.Decode(r)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			fmt.Fprint(w, err)
@@ -174,7 +176,7 @@ func (controller BaseController) Patch() http.Handler {
 			return
 		}
 
-		httpcodec.Encode(w, r, resource)
+		controller.Codec.Encode(w, r, resource)
 	})
 }
 
